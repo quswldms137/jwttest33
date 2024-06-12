@@ -1,0 +1,74 @@
+클라이언트에서 요청헤더에 데이터 추가하기
+xhttp.open("GET", "http://localhost:8888/reporter/article/1");
+//xhttp.setRequestHeader("Content-type", "multipart/form-data");
+xhttp.setRequestHeader("Authorization", "Bearer " + token);
+xhttp.setRequestHeader("writer", token_writer);
+xhttp.setRequestHeader("role", token_role);
+xhttp.setRequestHeader("email", token_email);
+//xhttp.setRequestHeader("Access-Control-Expose-Headers", "Authorization, writer, Role");//위에 set한 header속성들을 폭로한다. 
+xhttp.send();
+--------------------------------------------------
+서버에서 응답헤더에 데이터 추가하기
+response.addHeader("Authorization", "Bearer " + token);
+response.addHeader("writer", username);
+response.addHeader("Role", role);
+response.addHeader("Email", email);
+//위에 설정한 헤더 데이터를 클라이언트가 접근할 수 있도록 허용하는 코드
+response.addHeader("Access-Control-Expose-Headers", "Authorization, writer, Role, Email");
+-------------------------------------------
+서버에서 클라이언트가 보낸 요청헤더의 데이터를 얻어내기
+Enumeration<String> headers = request.getHeaderNames();
+while(headers.hasMoreElements()) {
+	System.out.println(headers.nextElement());
+	if(headers.nextElement().equals("writer")) {
+		System.out.println(request.getHeader("writer"));
+	}
+}
+
+-------------------------------------
+클라이언트에서 서버가 보낸 응답헤더의 데이터 얻어내기
+xhttp.onload = function() {
+	const result = JSON.parse(this.responseText);
+	console.log("result : " + result.title);
+	console.log("response header(writer): " + xhttp.getResponseHeader("writer"))
+	document.getElementById("demo2").innerHTML = result.title;
+}
+
+-------------------------------------------
+요청 헤더를 작성하고 응답헤더를 얻는 jquery ajax 코드 예
+
+$.ajax({
+  url: 'http://localhost:8888/reporter/article/1',
+  type: 'GET',
+  headers: {
+    'Authorization': 'Bearer ' + token,
+    'writer': token_writer,
+    'role': token_role
+  },
+  success: function(response) {
+    // 요청이 성공적으로 완료된 경우 처리할 코드
+    console.log("Response received: " + response);
+    console.log("Response header (writer): " + xhr.getResponseHeader("writer"));
+  },
+  error: function(xhr, status, error) {
+    // 요청이 실패한 경우 처리할 코드
+    console.error("Request failed with status code: " + xhr.status);
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
